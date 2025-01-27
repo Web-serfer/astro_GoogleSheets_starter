@@ -11,6 +11,9 @@ const csvData = await response.text();
 // Преобразуем CSV в JSON
 const parsedData = Papa.parse(csvData, { header: true });
 
+// Выводим распарсенные данные в консоль
+// console.log('Распарсенные данные:', parsedData);
+
 // Обрабатываем данные
 const lawyers = parsedData.data.map((row) => ({
   id: row.id,
