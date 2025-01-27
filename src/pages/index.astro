@@ -1,0 +1,65 @@
+---
+import Papa from 'papaparse';
+import Layout from '../layouts/Layout.astro';
+
+// Получаем данные из Google Таблиц
+const response = await fetch(
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vS-tFmSVtfAlE-7nAfhf3AcgrVOkG5S0V99XbvknujGrJUo3IRPcyZN2U_oAKxBeEdaseIIwj4oKxDa/pub?output=csv'
+);
+const csvData = await response.text();
+
+// Преобразуем CSV в JSON
+const parsedData = Papa.parse(csvData, { header: true });
+
+// Обрабатываем данные
+const lawyers = parsedData.data.map((row) => ({
+  id: row.id,
+  name: row.name,
+  specialization: row.specialization,
+  experience: row.experience,
+  description: row.description,
+  image: row.image,
+}));
+---
+
+<!-- Рендерим данные -->
+<Layout>
+  <div class="container mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold text-center mb-8">Наши юристы:</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        lawyers.map((lawyer) => (
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            {/* Изображение */}
+            <img
+              src={lawyer.image}
+              alt={lawyer.name}
+              class="w-full h-48 object-cover"
+            />
+
+            {/* Контент */}
+            <div class="p-6">
+              <h3 class="text-xl font-semibold mb-2">{lawyer.name}</h3>
+              <p class="text-gray-600 mb-2">
+                <span class="font-medium">Специализация:</span>{' '}
+                {lawyer.specialization}
+              </p>
+              <p class="text-gray-600 mb-2">
+                <span class="font-medium">Опыт:</span> {lawyer.experience}
+              </p>
+              <p class="text-gray-600 mb-4">{lawyer.description}</p>
+
+              {/* Кнопка (опционально) */}
+              <a
+                href="#"
+                class="inline-block bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+              >
+                Подробнее
+              </a>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Layout>
